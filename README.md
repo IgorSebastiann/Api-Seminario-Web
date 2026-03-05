@@ -5,16 +5,13 @@ Esta é uma demonstração de uma API REST simples utilizando **Spring Boot**, *
 ## 🚀 Como Rodar o Projeto
 
 1. Abra o terminal (ou Prompt de Comando/PowerShell) na pasta do projeto `seminario-backend`.
-2. Execute o comando abaixo para compilar e rodar a aplicação usando o Gradle Wrapper embutido:
+2. Como a configuração principal está estruturada no arquivo **`package.json`**, execute o comando:
    
-   **No Windows:**
    ```bash
-   .\gradlew.bat bootRun
+   cd seminario-backend
+   npm start
    ```
-   **No Mac/Linux:**
-   ```bash
-   ./gradlew bootRun
-   ```
+   *(Por baixo dos panos, o script `npm start` executa o wrapper do Gradle: `gradlew bootRun`)*
 
 A aplicação iniciará na porta `8081`.
 

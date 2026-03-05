@@ -1,0 +1,11 @@
+{
+    "name": "seminario-backend",
+    "version": "1.0.0",
+    "description": "API REST de Exemplo para o Seminário com Spring Boot",
+    "scripts": {
+        "start": "gradlew bootRun",
+        "build": "gradlew build"
+    },
+    "author": "Igor Mathias",
+    "license": "ISC"
+}
