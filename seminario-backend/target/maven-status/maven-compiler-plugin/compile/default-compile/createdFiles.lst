@@ -1,0 +1,5 @@
+com\exemplo\seminario\controller\MensagemController.class
+com\exemplo\seminario\repository\MensagemRepository.class
+com\exemplo\seminario\SeminarioBackendApplication.class
+com\exemplo\seminario\dto\MensagemDto.class
+com\exemplo\seminario\entity\Mensagem.class
