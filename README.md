@@ -20,17 +20,58 @@ A aplicação iniciará na porta `8081`.
 Você pode testar a API usando o **cURL**, **Postman**, **Insomnia** ou qualquer outra ferramenta.
 
 ### 1. Criar uma nova mensagem (POST)
-Abra outro terminal e execute:
+Abra outro terminal e execute. 
+
+**No Linux / Mac / Git Bash:**
 ```bash
-curl -X POST http://localhost:8081/api/mensagens -H "Content-Type: application/json" -d "{\"conteudo\": \"Olá, Spring Boot!\"}"
+curl -X POST http://localhost:8081/api/mensagens -H "Content-Type: application/json" -d '{"conteudo": "Olá, Spring Boot!"}'
+```
+
+**No Windows (PowerShell):**
+*(É necessário usar `curl.exe` e escapar as aspas internas com crase \` )*
+```powershell
+curl.exe -X POST http://localhost:8081/api/mensagens -H "Content-Type: application/json" -d "{\`"conteudo\`": \`"Olá, Spring Boot!\`"}"
 ```
 *Saída esperada:* `{"id":1,"conteudo":"Olá, Spring Boot!"}`
 
 ### 2. Listar mensagens (GET)
+
+**No Linux / Mac / Git Bash:**
 ```bash
 curl -X GET http://localhost:8081/api/mensagens
 ```
+
+**No Windows (PowerShell):**
+```powershell
+curl.exe -X GET http://localhost:8081/api/mensagens
+```
 *Saída esperada:* `[{"id":1,"conteudo":"Olá, Spring Boot!"}]`
+
+### 3. Atualizar uma mensagem (PUT)
+Neste exemplo, estamos atualizando a mensagem de ID `1`.
+
+**No Linux / Mac / Git Bash:**
+```bash
+curl -X PUT http://localhost:8081/api/mensagens/1 -H "Content-Type: application/json" -d '{"conteudo": "Mensagem atualizada com sucesso!"}'
+```
+
+**No Windows (PowerShell):**
+```powershell
+curl.exe -X PUT http://localhost:8081/api/mensagens/1 -H "Content-Type: application/json" -d "{\`"conteudo\`": \`"Mensagem atualizada com sucesso!\`"}"
+```
+
+### 4. Deletar uma mensagem (DELETE)
+Neste exemplo, estamos deletando a mensagem de ID `1`.
+
+**No Linux / Mac / Git Bash:**
+```bash
+curl -X DELETE http://localhost:8081/api/mensagens/1
+```
+
+**No Windows (PowerShell):**
+```powershell
+curl.exe -X DELETE http://localhost:8081/api/mensagens/1
+```
 
 ### Via Postman
 Para testar a API com uma interface gráfica mais amigável, você pode usar o Postman:
