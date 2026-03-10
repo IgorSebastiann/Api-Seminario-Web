@@ -1,6 +1,8 @@
 # Seminário Back-end: Prova de Conceito com Java & Spring Boot
 
-Esta é uma demonstração de uma API REST simples utilizando **Spring Boot**, **Spring Data JPA** e um banco de dados em memória **H2**.
+Esta é uma demonstração de uma API REST simples utilizando **Spring Boot**.
+A aplicação é focada apenas na criação de **Controllers** e **DTOs (Records)**, mantendo os dados salvos em memória (sem uso de banco de dados externo) para focar puramente no tráfego das requisições REST.
+
 ---
 # Habilitar NPM
 
@@ -43,9 +45,9 @@ curl -X POST http://localhost:8081/api/mensagens -H "Content-Type: application/j
 ```
 
 **No Windows (PowerShell):**
-*(É necessário usar `curl.exe` e escapar as aspas internas com crase \` )*
+*(É necessário usar `curl.exe` e escapar as aspas internas com crase ` )*
 ```powershell
-curl.exe -X POST http://localhost:8081/api/mensagens -H "Content-Type: application/json" -d "{\`"conteudo\`": \`"Olá, Spring Boot!\`"}"
+curl.exe -X POST http://localhost:8081/api/mensagens -H "Content-Type: application/json" -d "{`"conteudo`": `"Olá, Spring Boot!`"}"
 ```
 *Saída esperada:* `{"id":1,"conteudo":"Olá, Spring Boot!"}`
 
@@ -72,7 +74,7 @@ curl -X PUT http://localhost:8081/api/mensagens/1 -H "Content-Type: application/
 
 **No Windows (PowerShell):**
 ```powershell
-curl.exe -X PUT http://localhost:8081/api/mensagens/1 -H "Content-Type: application/json" -d "{\`"conteudo\`": \`"Mensagem atualizada com sucesso!\`"}"
+curl.exe -X PUT http://localhost:8081/api/mensagens/1 -H "Content-Type: application/json" -d "{`"conteudo`": `"Mensagem atualizada com sucesso!`"}"
 ```
 
 ### 4. Deletar uma mensagem (DELETE)
@@ -104,21 +106,12 @@ Para testar a API com uma interface gráfica mais amigável, você pode usar o P
 
 **2. Listar mensagens (GET)**
 - Abra uma nova aba, selecione o método **GET** e insira a mesma URL: `http://localhost:8081/api/mensagens`
-- Clique em **Send**. Você verá um array JSON com todas as mensagens já criadas no banco.
+- Clique em **Send**. Você verá um array JSON com todas as mensagens criadas na sessão atual em memória.
 
 ---
 
-## 🗄️ Console do Banco de Dados H2
-Como estamos utilizando o H2, você pode visualizar o banco de dados rodando direto pelo navegador:
-1. Acesse: [http://localhost:8081/h2-console](http://localhost:8081/h2-console)
-2. **JDBC URL:** `jdbc:h2:mem:seminariodb`
-3. **User Name:** `sa`
-4. Deixe a senha em branco e clique em **Connect**.
-5. Você poderá ver a tabela `MENSAGEM` recém-criada através do Spring Data JPA!
-
 ## 📂 Arquivos Principais Desta Prova de Conceito
-- `build.gradle`: Mostra o "setup" inicial, gerenciador de dependências (Starters Web e Data JPA).
-- `MensagemController.java`: Endpoints da nossa API REST (Controller).
+- `build.gradle`: Mostra o "setup" inicial, gerenciador de dependências (Starters Web).
+- `MensagemController.java`: Endpoints da nossa API REST (Controller) com a lógica em memória.
 - `MensagemDto.java`: Objeto de Transferência de Dados usando o recurso `record` do Java.
-- `Mensagem.java`: Entidade para abstração do banco de dados (Spring Data JPA).
-- `MensagemRepository.java`: Interface que abstrai a camada de dados (Spring Data JPA).
+- `Mensagem.java`: Classe de modelo representando a Mensagem na aplicação.
