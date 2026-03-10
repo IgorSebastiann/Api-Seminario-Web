@@ -103,6 +103,28 @@ O Spring Boot detecta o H2 no projeto e o configura automaticamente, sem nenhuma
 
 ---
 
+## 🐘 Gradle — O Gerenciador de Build
+
+**Gradle** é a ferramenta que **orquestra a construção do projeto**. Antes de rodar uma linha de código, o Gradle:
+
+1. **Baixa as dependências** declaradas (Spring Boot, H2, Hibernate...) do repositório Maven Central
+2. **Compila** todos os arquivos `.java` para bytecode
+3. **Empacota** tudo em um único `.jar` executável
+
+As dependências do projeto ficam declaradas no `build.gradle`:
+
+```groovy
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.h2database:h2'
+}
+```
+
+> 💡 Sem o Gradle, seria necessário baixar cada `.jar` manualmente, garantir que as versões fossem compatíveis entre si e adicioná-los ao classpath — um processo trabalhoso e propenso a erros.
+
+---
+
 ## 📂 Arquitetura em Camadas
 
 ```
