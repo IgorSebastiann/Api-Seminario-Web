@@ -148,3 +148,175 @@ npm start
 
 - API: **http://localhost:8081/api/mensagens**
 - Console H2: **http://localhost:8081/h2-console** (JDBC URL: `jdbc:h2:mem:seminariodb` | User: `sa` | Senha: em branco)
+
+---
+
+## ⚔️ Antes vs Depois — Código Real do Projeto
+
+Esta seção mostra o que seria necessário escrever para construir **a mesma API** sem o Spring Boot, usando apenas **Java EE / Servlet puro**.
+
+---
+
+### 🔴 Sem Spring Boot — Configuração do Servidor
+
+Sem o servidor embutido, seria necessário criar um `web.xml` para registrar cada servlet manualmente:
+
+```xml
+<!-- web.xml — arquivo de configuração obrigatório -->
+<web-app>
+    <servlet>
+        <servlet-name>MensagemServlet</servlet-name>
+        <servlet-class>com.exemplo.seminario.MensagemServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MensagemServlet</servlet-name>
+        <url-pattern>/api/mensagens/*</url-pattern>
+    </servlet-mapping>
+</web-app>
+```
+
+> ⚠️ Além disso, seria preciso instalar o **Tomcat separadamente**, empacotar o projeto como `.war` e fazer o deploy manualmente a cada alteração.
+
+---
+
+### 🔴 Sem Spring Boot — O Controller (Servlet puro)
+
+**Com Spring Boot** — o `MensagemController.java` do projeto tem 63 linhas e cobre os 4 verbos HTTP com anotações simples:
+
+```java
+// ✅ COM SPRING BOOT — código atual do projeto
+@RestController
+@RequestMapping("/api/mensagens")
+public class MensagemController {
+
+    @Autowired
+    public MensagemController(MensagemRepository repository) {
+        this.repository = repository; // Spring injeta automaticamente
+    }
+
+    @GetMapping
+    public List<Mensagem> listarTodas() {
+        return repository.findAll(); // Uma linha — Spring Data cuida do SQL
+    }
+
+    @PostMapping
+    public ResponseEntity<Mensagem> criar(@RequestBody MensagemDto dto) {
+        Mensagem salva = repository.save(new Mensagem(dto.conteudo()));
+        return new ResponseEntity<>(salva, HttpStatus.CREATED);
+    }
+}
+```
+
+**Sem Spring Boot** — o mesmo comportamento exigiria um `HttpServlet` com parse manual de JSON e roteamento na mão:
+
+```java
+// ❌ SEM SPRING BOOT — Servlet puro equivalente
+@WebServlet("/api/mensagens/*")
+public class MensagemServlet extends HttpServlet {
+
+    // Sem injeção de dependência — instância criada manualmente
+    private EntityManagerFactory emf;
+
+    @Override
+    public void init() {
+        // Configuração manual do banco — sem auto-configuração
+        emf = Persistence.createEntityManagerFactory("seminarioPU");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        EntityManager em = emf.createEntityManager();
+
+        // SQL manual — sem Spring Data JPA
+        List<Mensagem> mensagens = em.createQuery(
+            "SELECT m FROM Mensagem m", Mensagem.class
+        ).getResultList();
+
+        // Serialização JSON manual — sem Jackson automático
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < mensagens.size(); i++) {
+            Mensagem m = mensagens.get(i);
+            json.append("{\"id\":").append(m.getId())
+                .append(",\"conteudo\":\"").append(m.getConteudo())
+                .append("\"}");
+            if (i < mensagens.size() - 1) json.append(",");
+        }
+        json.append("]");
+        resp.getWriter().write(json.toString());
+
+        em.close();
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        // Parse manual do JSON do corpo da requisição — sem @RequestBody
+        StringBuilder body = new StringBuilder();
+        String line;
+        while ((line = req.getReader().readLine()) != null) {
+            body.append(line);
+        }
+        // Extrair "conteudo" do JSON manualmente — sem ObjectMapper automático
+        String conteudo = body.toString()
+            .replaceAll(".*\"conteudo\"\\s*:\\s*\"([^\"]+)\".*", "$1");
+
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+        Mensagem nova = new Mensagem(conteudo);
+        em.persist(nova);
+        em.getTransaction().commit();
+
+        resp.setStatus(HttpServletResponse.SC_CREATED);
+        resp.setContentType("application/json");
+        resp.getWriter().write(
+            "{\"id\":" + nova.getId() + ",\"conteudo\":\"" + nova.getConteudo() + "\"}"
+        );
+        em.close();
+    }
+
+    // doDelete e doPut teriam que ser implementados com lógica similar...
+    // + roteamento manual pela URL para distinguir /api/mensagens/{id}
+}
+```
+
+---
+
+### 🔴 Sem Spring Boot — Configuração do Banco (persistence.xml)
+
+Em vez do banco ser configurado automaticamente, seria necessário criar um `persistence.xml`:
+
+```xml
+<!-- src/main/resources/META-INF/persistence.xml -->
+<persistence>
+    <persistence-unit name="seminarioPU">
+        <class>com.exemplo.seminario.entity.Mensagem</class>
+        <properties>
+            <property name="javax.persistence.jdbc.driver"   value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.url"      value="jdbc:h2:mem:seminariodb"/>
+            <property name="javax.persistence.jdbc.user"     value="sa"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+            <property name="hibernate.hbm2ddl.auto"          value="create-drop"/>
+            <property name="hibernate.dialect"               value="org.hibernate.dialect.H2Dialect"/>
+        </properties>
+    </persistence-unit>
+</persistence>
+```
+
+Com o Spring Boot, **todo esse conteúdo fica em 3 linhas** no `application.properties` — e boa parte é auto-configurada sem precisar escrever nada.
+
+---
+
+### 📊 Resumo da Comparação
+
+| | **Com Spring Boot** (projeto atual) | **Sem Spring Boot** (Java EE puro) |
+|---|---|---|
+| Linhas no Controller | ~63 linhas | ~100+ linhas por verbo HTTP |
+| Configuração de servidor | Zero — embutido e automático | `web.xml` + instalação do Tomcat |
+| Configuração de banco | `application.properties` (3 linhas) | `persistence.xml` (~15 linhas) |
+| Parse de JSON | Automático (`@RequestBody`) | Manual (leitura de stream + parsing) |
+| Acesso ao banco | `repository.findAll()` | JPQL/SQL explícito + `EntityManager` |
+| Roteamento HTTP | `@GetMapping`, `@PostMapping`... | `if/else` na URL dentro do Servlet |
+| Injeção de dependência | `@Autowired` | `new MensagemServlet()` manual |
