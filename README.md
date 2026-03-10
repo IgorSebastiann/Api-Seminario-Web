@@ -1,6 +1,21 @@
 # Seminário Back-end: Prova de Conceito com Java & Spring Boot
 
 Esta é uma demonstração de uma API REST simples utilizando **Spring Boot**, **Spring Data JPA** e um banco de dados em memória **H2**.
+---
+# Habilitar NPM
+
+```bash
+npm install
+```
+
+# Habilitar Gradle
+
+```bash
+gradlew build
+```
+```bash
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
+```
 
 ## 🚀 Como Rodar o Projeto
 
