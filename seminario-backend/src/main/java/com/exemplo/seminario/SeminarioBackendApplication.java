@@ -1,13 +1,13 @@
-package com.exemplo.seminario;
+package com.exemplo.seminario; 
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.SpringApplication; // classe que inicia a aplicação
+import org.springframework.boot.autoconfigure.SpringBootApplication; // classe que configura a aplicação
 
-@SpringBootApplication
-public class SeminarioBackendApplication {
+@SpringBootApplication // classe que configura a aplicação
+public class SeminarioBackendApplication { // classe principal da aplicação
 
-	public static void main(String[] args) {
-		SpringApplication.run(SeminarioBackendApplication.class, args);
+	public static void main(String[] args) { // método principal da aplicação
+		SpringApplication.run(SeminarioBackendApplication.class, args); // inicia a aplicação
 	}
 
 }
